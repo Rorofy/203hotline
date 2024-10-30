@@ -1,0 +1,93 @@
+#!/usr/bin/env python3
+
+import sys
+import time
+from math import *
+
+def binomial_coeff(n, k):
+    return factorial(n) // (factorial(k) * factorial(n - k))
+
+def binomial_law(n, k, p):
+    return binomial_coeff(n, k) * pow(p, k) * pow(1 - p, (n - k))
+
+def poisson_law(k, l):
+    return (exp(l * (-1)) * pow(l, k)) / (factorial(k))
+
+def print_help():
+    print("USAGE")
+    print("\t./203hotline [n k | d]")
+    print("\nDESCRIPTION")
+    print("\tn\tn value for the computation of nk ")
+    print("\tk\tk value for the computation of nk")
+    print("\td\taverage duration of calls (in seconds)")
+
+def binomial_tab(d):
+    p = d / (8 * 3600)
+    overload = 1.0
+    print("Binomial Distribution:")
+    start_time = time.time()
+    for i in range(0, 51):
+        res = binomial_law(3500, i, p)
+        if i <= 25:
+            overload -= res
+        print("%d -> %.3f" % (i, res), end="")
+        if (i == 50):
+            pass
+        elif ((i + 1) % 5 == 0):
+            print("")
+        else:
+            print(end="\t")
+    if (overload > 1.0):
+        overload = 1.0
+    print("\nOverload: %.1f%%" % (overload * 100))
+    print("Computation time: %.2f ms" % (time.time() - start_time))
+    print()
+
+def poisson_tab(d):
+    p = d / (8 * 3600) * 3500
+    overload = 1.0
+    print("Poisson distribution:")
+    start_time = time.time()
+    for i in range(0, 51):
+        res = poisson_law(i, p)
+        if i <= 25:
+            overload -= res
+        print("%d -> %.3f" % (i, res), end="")
+        if (i == 50):
+            pass
+        elif ((i + 1) % 5 == 0):
+            print("")
+        else:
+            print(end="\t")
+    if (overload > 1.0):
+        overload = 1.0
+    print("\nOverload: %.1f%%" % (overload * 100))
+    print("Computation time: %.2f ms" % (time.time() - start_time))
+
+def main():
+    if (len(sys.argv) != 2 and len(sys.argv) != 3):
+        sys.exit(84)
+
+    if (len(sys.argv) == 2 and sys.argv[1] == "-h"):
+        print_help()
+    elif (len(sys.argv) == 3):
+        try:
+            av1 = int(sys.argv[1])
+            av2 = int(sys.argv[2])
+        except ValueError:
+            sys.exit(84)
+        if (av1 < 0 or av2 < 0):
+            sys.exit(84)
+        print("%d-combinations of a set of size %d:\n%d" % (av2, av1, binomial_coeff(av1, av2)))
+    elif (len(sys.argv) == 2):
+        try:
+            av1 = int(sys.argv[1])
+        except ValueError:
+            sys.exit(84)
+        if (av1 < 0):
+            sys.exit(84)
+        binomial_tab(av1)
+        poisson_tab(av1)
+    return (0)
+
+main()
